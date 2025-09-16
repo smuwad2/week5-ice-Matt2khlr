@@ -5,7 +5,7 @@
         <!-- Bootstrap -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
         
-         <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     </head>
     <body>
         <div class="bg-light text-center p-5 mb-4">
@@ -23,9 +23,81 @@
 
         </div>
         <script>
-            function getData() {
- 
-            }
+            async function getData() {
+                const typeVal = document.getElementById("type").value;
+                const limitVal= document.getElementById("limit").value
+                try {
+                    const response=
+                    await axios.get('/data',{
+                        "params": {
+                            "type": typeVal,
+                            "limit": limitVal,
+
+
+                    }})
+                    createTable(response.data)
+                } catch (error) {
+                    console.log(error);
+                }
+
+                function createTable(dataObj) {
+                    const resultDiv = document.getElementById("result");
+                    while (resultDiv.firstChild) {
+                        resultDiv.firstChild.remove();
+                    }
+                    
+                    const h2Elem = document.createElement("h2");
+                    const h2Val = dataObj["type"];
+                    h2Elem.innerText = h2Val;
+                    resultDiv.appendChild(h2Elem);
+                    
+
+                    const tableElem= document.createElement("table");
+                    tableElem.className = "table" // needed to make a bootstrap table
+                    const tBodyElem = document.createElement("tbody");
+                    //create table heading row
+                    const trElem = document.createElement("tr");
+                    //records is returned as an array: we can retrieve first record and get the keys
+
+                    dataObj["records"]//this is my records array
+                    Object.keys(dataObj["records"][0]) //gives us keys of the first element
+                    const tblHeadings = Object.keys(dataObj["records"][0])
+                    for (const headingVal of tblHeadings){
+                        const thElem = document.createElement("th")
+                        thElem.innerText = headingVal;
+                        trElem.appendChild(thElem);
+
+
+
+
+                    }
+                    tBodyElem.appendChild(trElem);
+                    tableElem.appendChild(tBodyElem);
+                    resultDiv.appendChild(tableElem);
+
+                    //create the inner content of table
+                    for(let i=0; i<dataObj["records"].length; i++){
+                        const trElem =  document.createElement("tr");
+                        for(let j=0; j<tblHeadings.length; j++){
+                            const tdVal = dataObj["records"][i][tblHeadings[j]]
+                            const tdElem = document.createElement("td");
+                            tdElem.innerText =  tdVal;
+                            trElem.appendChild(tdElem);
+
+                        }
+                        tBodyElem.appendChild(trElem);
+                    }
+                        tableElem.appendChild(tBodyElem);
+                        resultDiv.appendChild(tableElem);
+                    }
+                }
+
+        //     .then(response=>{
+        //         console.log("Response Data:", response.data);
+        //         document.getElementById("result").innerText = response.data;
+        //     })
+        // }
+           
 
         </script>
 </body>
